@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "package-n8n-green": {
+      "source": "getcolors/n8n",
+      "sourceType": "github",
+      "skillPath": "skills/package-n8n-green/SKILL.md",
+      "computedHash": "37873f255e1a93f96d8fd7feac2fc5c99006b6d23bc43020b19abc0843a9686b"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Desired state for self-hosted n8n serverless Postgres on Vultr: the storage broker, the pageserver, one safekeeper and a compute node on one loopback-only instance, with layers and WAL in Cloudflare R2.">
+  <title>n8n-vultr — getcolors deployment</title>
+  <style>
+    :root{color-scheme:light;--ink:#1f2328;--muted:#59636e;--line:#d0d7de;--soft:#f6f8fa;--blue:#0969da;--green:#1a7f37}*{box-sizing:border-box}body{margin:0;color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:920px;margin:auto;padding:64px 28px 100px}h1{font-size:48px;line-height:1.05;margin:0}h2{margin-top:54px;padding-bottom:8px;border-bottom:1px solid var(--line)}.lead{font-size:20px;color:var(--muted);max-width:790px}code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}pre{padding:18px;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--soft)}:not(pre)>code{padding:.12em .35em;border-radius:5px;background:var(--soft)}a{color:var(--blue)}.eyebrow{color:var(--green);font-weight:700;letter-spacing:.08em}.callout{padding:16px 18px;border-left:4px solid var(--green);background:#dafbe1}.warn{padding:16px 18px;border-left:4px solid #bf8700;background:#fff8c5}@media(max-width:650px){main{padding-top:38px}h1{font-size:36px}}
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4VKP1WY4QJ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-4VKP1WY4QJ',{page_title:'n8n-vultr — getcolors deployment'});</script>
+<script src="https://rybbit.getcolors.ai/api/script.js" data-site-id="9fb9c41a6d49" defer></script>
+</head>
+<body><main>
+  <p class="eyebrow">DEPLOYMENT · VULTR · SERVERLESS POSTGRES</p>
+  <h1>n8n-vultr</h1>
+  <p class="lead">Desired state for one self-hosted n8n server: the storage broker, the pageserver, one safekeeper and a Postgres 17 compute node on a single guarded Vultr instance in Amsterdam, with layers and WAL in Cloudflare R2.</p>
+
+  <div class="callout"><strong>The R2 prefix is the database.</strong> The tenant and timeline identities live in <code>colors.yml</code> and the data lives under this profile's prefix in R2, so a rebuilt host re-attaches the same identities and rehydrates — bounded by the async-WAL RPO. Ownership markers keep convergence from ever attaching a foreign or half-initialized prefix.</div>
+
+  <h2>What is tracked here</h2>
+  <p><code>colors.yml</code> (the only editable desired state), the installed <a href="https://github.com/getcolors/n8n">n8n Package Skill</a> payload and lockfile, a root launcher copied from that payload, toolchain files, and documentation. Credentials live in gitignored <code>.envrc.private</code>; generated output in <code>.colors/</code> is never committed.</p>
+
+  <h2>Lifecycle</h2>
+  <pre><code>direnv allow               # once, after cloning
+./green build              # render .colors/n8n-vultr/ — contacts nothing
+./green create --dry-run   # walk the workflow, no side effects
+./green create             # converge (requires authorization)
+./green delete             # guarded and destructive</code></pre>
+
+  <h2>Connecting</h2>
+  <p>No DNS record, no public database port — the firewall opens 22 only. The client path is the SSH tunnel through the alias the package writes:</p>
+  <pre><code>ssh -L 55433:127.0.0.1:55433 n8n-vultr
+psql 'postgresql://n8n@127.0.0.1:55433/n8ndb'</code></pre>
+  <p>The role's password is generated on the server: <code>ssh n8n-vultr cat /etc/n8n/secrets/n8n_role_password</code>. <code>n8n-status</code> summarizes the deployment; <code>n8n-rotate</code> rotates the password atomically.</p>
+
+  <div class="warn"><strong>Live storage.</strong> Never configure R2 lifecycle rules on the bucket and never touch objects under <code>n8n-vultr/data/</code> by hand — that prefix is live database storage, not backups.</div>
+
+  <p><a href="https://github.com/getcolors/n8n-vultr">Source on GitHub</a> · <a href="https://github.com/getcolors/n8n">The n8n Package Skill</a></p>
+</main></body>
+</html>
