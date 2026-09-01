@@ -31,6 +31,25 @@ provider-compute: vultr
 provider-dns: cloudflare
 provider-backend: r2
 
+# --- R2 blast radius ----------------------------------------------------------
+#
+# `shared-accepted` records that ONE R2 credential currently reaches OpenTofu
+# state, live Neon data, and backups alike. Measured from the live host on
+# 2026-09-01: that credential could list, write and DELETE in the state bucket
+# and delete backup sets. A backup a compromised host can erase is not a
+# backup, and the host has no legitimate reason to touch state at all.
+#
+# This key exists so that posture is a deliberate line in committed desired
+# state rather than a silent default -- the package refuses to converge on the
+# shared pair without it.
+#
+# TO CLOSE: mint two R2 tokens in the Cloudflare dashboard (R2 > Manage R2 API
+# Tokens), each Object Read & Write on exactly one bucket, put them in
+# .envrc.private as COLORS_PAR_NEON_R2_* and COLORS_PAR_N8N_BACKUP_R2_*, then
+# DELETE this key. Acceptance gate R2 stops reporting a skip and starts
+# proving the backup credential cannot reach live data.
+r2-credential-sharing: shared-accepted
+
 # Preserve this guard in committed desired state. Destruction requires an
 # explicitly authorized one-run override; never edit this flag to bypass it.
 compute-prevent-destroy: true
