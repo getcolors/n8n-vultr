@@ -1,5 +1,6 @@
 #!/usr/bin/env bb
-;; Neon launcher — self-hosted Neon serverless Postgres on one Vultr instance.
+;; n8n launcher — n8n workflow automation on one Vultr instance, backed by a
+;; colocated self-hosted Neon storage tier.
 ;;
 ;; Desired state lives in colors.yml, found by walking up from the working
 ;; directory. Secrets and tokens are never written there: every credential key
@@ -51,7 +52,7 @@
 ;; cannot resolve its own library says so rather than inventing a SHA or
 ;; silently falling back to whatever is lying around. `bb pin` refuses to stamp
 ;; a dirty or unpushed HEAD for the same reason.
-(def ^:private n8n-sha "8d45da1e2066e22c8ccecb4b09688bf0767b032a")
+(def ^:private n8n-sha "96eb31989261a75a185d63115d5d960ae645ce1f")
 
 (def ^:private n8n-git-url "https://github.com/getcolors/n8n.git")
 (def ^:private green-git-url "https://github.com/getcolors/green.git")
@@ -164,7 +165,7 @@
        "[-f|--file colors.yml] [--dry-run]\n"
        "\n"
        "  build     render the work directory only — contact nothing\n"
-       "  create    provision and verify the Neon serverless Postgres server\n"
+       "  create    provision and verify the n8n server and its storage tier\n"
        "  delete    remove the protected deployment"))
 
 (defn run

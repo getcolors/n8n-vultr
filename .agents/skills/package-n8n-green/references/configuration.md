@@ -127,7 +127,8 @@ blanks.
 
 ## Rules the validator enforces
 
-Beyond presence and shape, `./green build` refuses:
+Beyond presence and shape, `build` refuses — in every colour, with the same
+messages:
 
 - an image without a digest pin, and a `n8n-runners-image` whose version differs
   from `n8n-image` (upstream requires equality; a mismatch fails when a Code
