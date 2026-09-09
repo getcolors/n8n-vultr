@@ -24,3 +24,5 @@ Generated compute documents were present. Any rendered backend documents used
 compute state keys and contained no credentials.
 This proves offline rendering, not live credentials, migrated ownership, or
 application health.
+
+Published lifecycle update: remote Ansible skips validated retired compute even when caller input retains a stale IP or private-key path. Other cleanup keeps its existing ordering. Desired state is unchanged.
